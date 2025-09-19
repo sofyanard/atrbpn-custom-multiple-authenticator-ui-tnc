@@ -1,0 +1,6 @@
+{
+    "themes": [{
+        "name" : "atrbpn-custom-multiple-authenticator-ui-tnc",
+        "types": [ "login"]
+    }]
+}
