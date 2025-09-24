@@ -67,6 +67,12 @@
                             </div>
 
                             <div id="kc-form-buttons" >
+                                <div class="custom-control custom-checkbox mb-2">
+                                    <input type="checkbox" class="custom-control-input" id="termsCheck" name="termsCheck" required>
+                                    <label class="custom-control-label" for="termsCheck">
+                                        Saya telah membaca dan menyetujui <a href="#" id="show-terms-link">Syarat dan Ketentuan</a> Kementerian ATR/BPN
+                                    </label>
+                                </div>
                                 <input type="submit" class="btn btn-primary w-100" id="kc-login" value="Login" />
                             </div>
 
@@ -77,6 +83,34 @@
             <div class="col-md-8 px-0">
                 <div class="image" style="background-image: url('${url.resourcesPath}/images/image_login_2_1.png')"></div>
             </div>
+
+            <!-- Terms and Conditions Modal -->
+            <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="termsModalLabel"><div id="tncMessageDiv" name="tncMessageDiv"></div></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#termsModal').modal('hide')">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="max-height:60vh;overflow-y:auto;">
+                        <!-- Replace the content below with your actual terms and conditions -->
+                        <p>
+                            <div id="tncContentDiv" name="tncContentDiv"></div>
+                        </p>
+                        <p>
+                            <div>Versi T&C terbaru: <span id="tncVersion" name="tncVersion"></span></div>
+                            <div><a id="tncUrlLink" name="tncUrlLink" target="_blank"></a></div>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#termsModal').modal('hide')">Tutup</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -88,6 +122,55 @@
     $('#kc-form-login').submit(function() {
         $("input").blur();
         $("body").addClass("loading");
+    });
+
+    function retrieveTncContent() {
+        <#if tncMessage??>
+            $('#tncMessageDiv').html('${tncMessage?js_string}');
+        <#else>
+            $('#tncMessageDiv').html('Error retrieving T&C data');
+        </#if>
+
+        <#if tncContent??>
+            $('#tncContentDiv').html('${tncContent?js_string}');
+        <#else>
+            $('#tncContentDiv').html('Error retrieving T&C data');
+        </#if>
+
+        <#if tncVersionUpdated??>
+            $('#tncVersion').text('${tncVersionUpdated?js_string}');
+        <#else>
+            $('#tncVersion').text('N/A');
+        </#if>
+
+        <#if tncUrl??>
+            $('#tncUrlLink').attr('href', '${tncUrl?js_string}').text('Unduh di sini');
+        <#else>
+            $('#tncUrlLink').hide();
+        </#if>
+    }
+
+    // Enable/disable login button based on terms checkbox
+    $('#termsCheck').on('change', function() {
+        $('#kc-login').prop('disabled', !this.checked);
+    });
+
+    // Set initial state on page load
+    $(function() {
+        $('#kc-login').prop('disabled', !$('#termsCheck').is(':checked'));
+        retrieveTncContent();
+        <#if tncStatus?? && tncStatus == 0>
+            $('#termsCheck').prop('checked', false);
+            $('#termsModal').modal('show');
+        <#else>
+            $('#termsCheck').prop('checked', true);
+        </#if>
+    });
+
+    // Show modal when link is clicked
+    $('#show-terms-link').on('click', function(e) {
+        e.preventDefault();
+        $('#termsModal').modal('show');
     });
 
 </script>
