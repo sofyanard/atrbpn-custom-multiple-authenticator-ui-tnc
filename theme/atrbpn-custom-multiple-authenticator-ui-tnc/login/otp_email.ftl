@@ -62,7 +62,7 @@
                             <div id="tnc-field" class="wrap-input">
                                 <div id="otp-field" class="wrap-input">
                                     <img src="${url.resourcesPath}/images/shield.png" alt="" class="prepend-icon" />
-                                    <input type="text" class="form-control" placeholder="6 Digits OTP" autocomplete="off" id="otp" name="otp" maxlength="6" />
+                                    <input type="text" class="form-control" placeholder="6 Digits OTP" autocomplete="off" id="otp" name="otp" maxlength="6" required />
                                 </div>
                             </div>
 
@@ -157,7 +157,6 @@
 
     // Set initial state on page load
     $(function() {
-        $('#kc-login').prop('disabled', !$('#termsCheck').is(':checked'));
         retrieveTncContent();
         <#if tncStatus?? && tncStatus == 0>
             $('#termsCheck').prop('checked', false);
@@ -165,6 +164,7 @@
         <#else>
             $('#termsCheck').prop('checked', true);
         </#if>
+        $('#kc-login').prop('disabled', !$('#termsCheck').is(':checked'));
     });
 
     // Show modal when link is clicked
