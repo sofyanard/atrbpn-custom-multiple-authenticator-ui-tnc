@@ -212,6 +212,26 @@
         $('#error-div').show();
     </#if>
 
+    // prevent sql injection
+    function sanitizeInput(selector, allowedPattern) {
+        $(selector).on('input paste', function(e) {
+            var $this = $(this);
+            
+            // Delay execution for paste event
+            setTimeout(function() {
+                var value = $this.val();
+                var cleanValue = value.replace(allowedPattern, '');
+                
+                if (value !== cleanValue) {
+                    $this.val(cleanValue);
+                }
+            }, 1);
+        });
+    }
+
+    // For username (alphanumeric + dot, dash, underscore)
+    sanitizeInput('#username', /[^a-zA-Z0-9.\-_]/g);
+
 </script>
 
 </body>
