@@ -158,7 +158,7 @@
                                     <#if tncMessage??>
                                         ${tncMessage?no_esc}
                                     <#else>
-                                        Syarat dan Ketentuan
+                                        Error retrieving T&C data.
                                     </#if>
                                 </div>
                             </h5>
@@ -179,13 +179,15 @@
                                 <div class="updated">
                                     <div>Versi T&C terbaru: 
                                         <span id="tncVersion" name="tncVersion">
-                                            <#if tncVersion??>${tncVersion?js_string}</#if>
+                                            <#if tncVersionUpdated??>${tncVersionUpdated?js_string}</#if>
                                         </span>
                                     </div>
                                     <div>
-                                        <a id="tncUrlLink" name="tncUrlLink" target="_blank">
-                                            <#if tncUrl??>${tncUrl?js_string}</#if>
-                                        </a>
+                                        <#if tncUrl??>
+                                            <a id="tncUrlLink" name="tncUrlLink" href="${tncUrl?js_string}" target="_blank">Unduh di sini</a>
+                                        <#else>
+                                            <span id="tncUrlLink" name="tncUrlLink" style="display: none;"></span>
+                                        </#if>
                                     </div>
                                 </div>
                             </div>
@@ -222,32 +224,6 @@
         $('#error-div').show();
     </#if>
 
-    function retrieveTncContent() {
-        <#if tncMessage??>
-            $('#tncMessageDiv').html('${tncMessage?js_string}');
-        <#else>
-            $('#tncMessageDiv').html('Error retrieving T&C data');
-        </#if>
-
-        <#if tncContent??>
-            $('#tncContentDiv').html('${tncContent?js_string}');
-        <#else>
-            $('#tncContentDiv').html('Error retrieving T&C data');
-        </#if>
-
-        <#if tncVersionUpdated??>
-            $('#tncVersion').text('${tncVersionUpdated?js_string}');
-        <#else>
-            $('#tncVersion').text('N/A');
-        </#if>
-
-        <#if tncUrl??>
-            $('#tncUrlLink').attr('href', '${tncUrl?js_string}').text('Unduh di sini');
-        <#else>
-            $('#tncUrlLink').hide();
-        </#if>
-    }
-
     // Enable/disable login button based on terms checkbox
     $('#termsCheck').on('change', function() {
         $('#kc-login').prop('disabled', !this.checked);
@@ -255,7 +231,6 @@
 
     // Set initial state on page load
     $(function() {
-        // retrieveTncContent();
         <#if tncStatus?? && tncStatus == 0>
             $('#termsCheck').prop('checked', false);
             $('#termsModal').modal('show');
