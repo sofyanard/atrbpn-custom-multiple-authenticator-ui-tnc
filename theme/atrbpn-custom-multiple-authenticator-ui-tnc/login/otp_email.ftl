@@ -39,6 +39,46 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <style>
+        .modal-body {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            border-left: 4px solid #0d6efd;
+        }
+        .toc h3 {
+            margin-top: 0;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: 8px;
+        }
+        .toc a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .updated {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -86,23 +126,47 @@
 
             <!-- Terms and Conditions Modal -->
             <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
                     <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="termsModalLabel"><div id="tncMessageDiv" name="tncMessageDiv"></div></h5>
+                        <h5 class="modal-title" id="termsModalLabel">
+                            <div id="tncMessageDiv" name="tncMessageDiv">
+                                <#if tncMessage??>
+                                    ${tncMessage?no_esc}
+                                <#else>
+                                    Error retrieving T&C data.
+                                </#if>
+                            </div>
+                        </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#termsModal').modal('hide')">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body" style="max-height:60vh;overflow-y:auto;">
-                        <!-- Replace the content below with your actual terms and conditions -->
-                        <p>
-                            <div id="tncContentDiv" name="tncContentDiv"></div>
-                        </p>
-                        <p>
-                            <div>Versi T&C terbaru: <span id="tncVersion" name="tncVersion"></span></div>
-                            <div><a id="tncUrlLink" name="tncUrlLink" target="_blank"></a></div>
-                        </p>
+                    <div class="modal-body">
+                        <div class="container">
+                            <!-- Replace the content below with your actual terms and conditions -->
+                            <div id="tncContentDiv" name="tncContentDiv">
+                                <#if tncContent??>
+                                    ${tncContent?no_esc}
+                                <#else>
+                                    Error retrieving T&C data.
+                                </#if>
+                            </div>
+                            <div class="updated">
+                                <div>Versi T&C terbaru: 
+                                    <span id="tncVersion" name="tncVersion">
+                                        <#if tncVersionUpdated??>${tncVersionUpdated?js_string}</#if>
+                                    </span>
+                                </div>
+                                <div>
+                                    <#if tncUrl??>
+                                        <a id="tncUrlLink" name="tncUrlLink" href="${tncUrl?js_string}" target="_blank">Unduh di sini</a>
+                                    <#else>
+                                        <span id="tncUrlLink" name="tncUrlLink" style="display: none;"></span>
+                                    </#if>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#termsModal').modal('hide')">Tutup</button>
@@ -124,32 +188,6 @@
         $("body").addClass("loading");
     });
 
-    function retrieveTncContent() {
-        <#if tncMessage??>
-            $('#tncMessageDiv').html('${tncMessage?js_string}');
-        <#else>
-            $('#tncMessageDiv').html('Error retrieving T&C data');
-        </#if>
-
-        <#if tncContent??>
-            $('#tncContentDiv').html('${tncContent?js_string}');
-        <#else>
-            $('#tncContentDiv').html('Error retrieving T&C data');
-        </#if>
-
-        <#if tncVersionUpdated??>
-            $('#tncVersion').text('${tncVersionUpdated?js_string}');
-        <#else>
-            $('#tncVersion').text('N/A');
-        </#if>
-
-        <#if tncUrl??>
-            $('#tncUrlLink').attr('href', '${tncUrl?js_string}').text('Unduh di sini');
-        <#else>
-            $('#tncUrlLink').hide();
-        </#if>
-    }
-
     // Enable/disable login button based on terms checkbox
     $('#termsCheck').on('change', function() {
         $('#kc-login').prop('disabled', !this.checked);
@@ -157,7 +195,6 @@
 
     // Set initial state on page load
     $(function() {
-        retrieveTncContent();
         <#if tncStatus?? && tncStatus == 0>
             $('#termsCheck').prop('checked', false);
             $('#termsModal').modal('show');
